@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fabio Rebouças | Arquitetura</title>
+    <style>
+        /* Critical CSS inline */
+        :root {
+            --color-bg: #f2eee7;
+            --color-text: #111111;
+            --color-primary: #393f50;
+            --color-secondary: #393f50;
+            --color-accent: #c8a87d;
+            --color-overlay: rgba(0, 0, 0, 0.7);
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+            --spacing-xl: 8rem;
+            --font-primary: 'Inter', sans-serif;
+            --transition-fast: 0.3s ease;
+            --transition-medium: 0.5s ease;
+            --transition-slow: 0.8s ease;
+            --border-radius: 0px;
+            --container-width: 1280px;
+        }
+
+        [data-theme="dark"] {
+            --color-bg: #111111;
+            --color-text: #f5f5f5;
+            --color-primary: #f5f5f5;
+            --color-secondary: #222222;
+            --color-overlay: rgba(0, 0, 0, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            overflow-x: hidden;
+            transition: background-color var(--transition-medium), color var(--transition-medium);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 500;
+            line-height: 1.2;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 300;
+            letter-spacing: -0.05em;
+        }
+
+        h2 {
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            letter-spacing: -0.03em;
+            font-weight: 400;
+        }
+
+        h3 {
+            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            font-weight: 400;
+        }
+
+        p {
+            margin-bottom: var(--spacing-md);
+            font-weight: 300;
+            font-size: clamp(1rem, 1.1vw, 1.1rem);
+        }
+
+        a {
+            color: var(--color-text);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+
+        a:hover {
+            color: var(--color-accent);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .container {
+            width: 100%;
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        .section {
+            padding: var(--spacing-xl) 0;
+            position: relative;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--color-primary);
+            color: var(--color-bg);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: all var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            background-color: var(--color-accent);
+            color: var(--color-text);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--color-primary);
+            color: var(--color-bg);
+        }
+
+        .btn-arrow {
+            padding-right: var(--spacing-lg);
+        }
+
+        .btn-arrow .arrow {
+            position: absolute;
+            right: var(--spacing-md);
+            display: inline-block;
+            transition: transform var(--transition-fast);
+        }
+
+        .btn-arrow:hover .arrow {
+            transform: translateX(5px);
+        }
+
+        /* Header & Navigation */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: var(--spacing-md) 0;
+            transition: background-color var(--transition-medium), padding var(--transition-medium);
+        }
+
+        .header.scrolled {
+            background-color: var(--color-bg);
+            padding: var(--spacing-xs) 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .header__container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header__logo {
+            font-size: 1.5rem;
+            font-weight: 500;
+            letter-spacing: -0.05em;
+            color: var(--color-primary);
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav__list {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav__item {
+            margin-left: var(--spacing-md);
+        }
+
+        .nav__link {
+            position: relative;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: var(--spacing-xs) 0;
+        }
+
+        .nav__link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--color-accent);
+            transition: width var(--transition-fast);
+        }
+
+        .nav__link:hover::after, 
+        .nav__link.active::after {
+            width: 100%;
+        }
+
+        .theme-toggle {
+            margin-left: var(--spacing-md);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--color-text);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px; /* For header offset */
+        }
+
+        .hero__bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .hero__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            opacity: 0;
+            transition: transform 1.5s ease, opacity 1.5s ease;
+        }
+
+        .hero__img.loaded {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .hero__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-overlay);
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .hero__content {
+            max-width: 800px;
+            color: rgb(7, 7, 7);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .hero__content.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero__title {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .hero__subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.5rem);
+            margin-bottom: var(--spacing-lg);
+            max-width: 600px;
+            font-weight: 300;
+        }
+
+        /* About Section */
+        .about {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            align-items: center;
+        }
+
+        .about__content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .about__content.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .about__image {
+            position: relative;
+            height: 100%;
+            min-height: 500px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .about__image.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .about__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .section__title {
+            margin-bottom: var(--spacing-md);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section__title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--color-accent);
+        }
+
+        /* Portfolio Section - MODIFICADO PARA INCLUIR MODAIS */
+        .portfolio__header {
+            margin-bottom: var(--spacing-lg);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .portfolio__header.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .portfolio__filters {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .portfolio__filter {
+            background: none;
+            border: none;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            cursor: pointer;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--color-text);
+            opacity: 0.6;
+            transition: opacity var(--transition-fast), color var(--transition-fast);
+        }
+
+        .portfolio__filter:hover,
+        .portfolio__filter.active {
+            opacity: 1;
+            color: var(--color-accent);
+        }
+
+        .portfolio__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .portfolio__item {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 1/1.25;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .portfolio__item.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .portfolio__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-medium);
+        }
+
+        .portfolio__overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-overlay);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: var(--spacing-md);
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+        }
+
+        .portfolio__item:hover .portfolio__img {
+            transform: scale(1.05);
+        }
+
+        .portfolio__item:hover .portfolio__overlay {
+            opacity: 1;
+        }
+
+        .portfolio__title {
+            color: white;
+            margin-bottom: var(--spacing-xs);
+            transform: translateY(20px);
+            transition: transform var(--transition-medium);
+        }
+
+        .portfolio__category {
+            color: var(--color-accent);
+            font-size: 0.9rem;
+            transform: translateY(20px);
+            transition: transform var(--transition-medium);
+        }
+
+        .portfolio__item:hover .portfolio__title,
+        .portfolio__item:hover .portfolio__category {
+            transform: translateY(0);
+        }
+
+        /* MODAIS DE GALERIA - NOVOS ESTILOS */
+        .portfolio-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1001;
+            overflow: auto;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90vh;
+            margin: 5vh auto;
+            background: var(--color-bg);
+            padding: var(--spacing-md);
+            border-radius: 4px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--color-text);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--color-text);
+        }
+
+        .modal-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .modal-gallery img:hover {
+            transform: scale(1.03);
+        }
+
+        .modal-main-image {
+            width: 100%;
+            max-height: 60vh;
+            object-fit: contain;
+            margin-bottom: var(--spacing-md);
+            display: none;
+        }
+
+        .modal-main-image.active {
+            display: block;
+        }
+
+        .modal-description {
+            color: var(--color-text);
+            margin-bottom: var(--spacing-md);
+        }
+
+        /* Contact Section */
+        .contact {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .contact__content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .contact__content.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .contact__form {
+            display: grid;
+            gap: var(--spacing-md);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .contact__form.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .form__group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form__label {
+            margin-bottom: var(--spacing-xs);
+            font-size: 0.9rem;
+            color: var(--color-text);
+            opacity: 0.8;
+        }
+
+        .form__input,
+        .form__textarea {
+            padding: var(--spacing-sm);
+            background-color: var(--color-secondary);
+            border: none;
+            color: var(--color-text);
+            font-family: var(--font-primary);
+            font-size: 1rem;
+            transition: box-shadow var(--transition-fast);
+        }
+
+        .form__input:focus,
+        .form__textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--color-accent);
+        }
+
+        .form__textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* Footer Section */
+        .footer {
+            background-color: var(--color-secondary);
+            padding: var(--spacing-lg) 0;
+        }
+
+        .footer__grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .footer__logo {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-bottom: var(--spacing-md);
+            letter-spacing: -0.05em;
+        }
+
+        .footer__text {
+            margin-bottom: var(--spacing-md);
+            opacity: 0.8;
+        }
+
+        .footer__title {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .footer__list {
+            list-style: none;
+        }
+
+        .footer__item {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .footer__link {
+            opacity: 0.8;
+            transition: opacity var(--transition-fast);
+        }
+
+        .footer__link:hover {
+            opacity: 1;
+        }
+
+        .footer__bottom {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid rgba(128, 128, 128, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer__copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .footer__social {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .footer__social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--color-bg);
+            transition: background-color var(--transition-fast);
+        }
+
+        .footer__social-link:hover {
+            background-color: var(--color-accent);
+        }
+
+        /* Caderno Técnico Section */
+        .caderno-tecnico {
+            background-color: var(--color-secondary);
+            padding: var(--spacing-lg);
+            border-radius: 4px;
+        }
+        
+        .section__subtitle {
+            font-size: 1.1rem;
+            margin-bottom: var(--spacing-lg);
+            opacity: 0.8;
+        }
+        
+        .login-form {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .form__hint {
+            font-size: 0.9rem;
+            margin-top: var(--spacing-xs);
+            opacity: 0.6;
+        }
+        
+        .form__error {
+            color: #e74c3c;
+            margin-top: var(--spacing-sm);
+            display: none;
+        }
+        
+        .protected-content {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .content-item {
+            background-color: var(--color-bg);
+            padding: var(--spacing-md);
+            border-radius: 4px;
+        }
+        
+        .content-item h3 {
+            margin-bottom: var(--spacing-md);
+            font-size: 1.2rem;
+        }
+        
+        .content-downloads {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+        
+        .download-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--color-secondary);
+            transition: all var(--transition-fast);
+        }
+        
+        .download-link:hover {
+            background-color: var(--color-secondary);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .about,
+            .contact {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-lg);
+            }
+            
+            .about__image {
+                order: -1;
+                min-height: 400px;
+            }
+            
+            .footer__grid {
+                grid-template-columns: 1fr 1fr;
+                gap: var(--spacing-md);
+            }
+
+            .modal-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header__container {
+                position: relative;
+            }
+            
+            .mobile-toggle {
+                display: block;
+            }
+            
+            .nav {
+                position: absolute;
+                top: 100%;
+                right: var(--spacing-md);
+                background-color: var(--color-bg);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+                padding: var(--spacing-md);
+                flex-direction: column;
+                align-items: flex-start;
+                transform: translateY(-20px);
+                opacity: 0;
+                pointer-events: none;
+                transition: transform var(--transition-fast), opacity var(--transition-fast);
+            }
+            
+            .nav.active {
+                transform: translateY(0);
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            .nav__list {
+                flex-direction: column;
+            }
+            
+            .nav__item {
+                margin: var(--spacing-xs) 0;
+                margin-left: 0;
+            }
+            
+            .theme-toggle {
+                margin: var(--spacing-sm) 0;
+                margin-left: 0;
+            }
+            
+            .portfolio__grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .footer__grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer__bottom {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .modal-content {
+                max-width: 95%;
+                padding: var(--spacing-sm);
+            }
+
+            .modal-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portfolio__filters {
+                flex-wrap: wrap;
+            }
+            
+            .portfolio__grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-gallery {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header__container">
+            <a href="#" class="header__logo">Fabio Rebouças</a>
+            <button class="mobile-toggle" aria-label="Toggle menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="#home" class="nav__link active">Início</a></li>
+                    <li class="nav__item"><a href="#about" class="nav__link">Sobre</a></li>
+                    <li class="nav__item"><a href="#portfolio" class="nav__link">Portfólio</a></li>
+                    <li class="nav__item"><a href="#contact" class="nav__link">Contato</a></li>
+                </ul>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="section hero" id="home">
+        <div class="hero__bg">
+            <img src="img/WhatsApp Image 2020-07-07 at 18.18.50.jpeg" alt="Arquitetura contemporânea" class="hero__img">
+            <div class="hero__overlay"></div>
+        </div>
+        <div class="container">
+            <div class="hero__content">
+                <h1 class="hero__title">Criando espaços que contam histórias!</h1>
+                <p class="hero__subtitle">Arquitetura contemporânea que equilibra estética, funcionalidade e sustentabilidade para criar ambientes transformadores.</p>
+                <a href="#portfolio" class="btn btn-arrow">
+                    Ver Projetos <span class="arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="about">
+                <div class="about__content">
+                    <h2 class="section__title">Fabio Rebouças</h2>
+                    <p>Sou Fábio, arquiteto e urbanista. Desde cedo, entendi que a arquitetura não é só sobre construir — é sobre cuidar. Cuidar das pessoas, dos espaços e das histórias que eles carregam.</p>
+
+<p>Gosto de pensar que cada projeto é uma oportunidade de criar lugares que façam bem. Lugares que acolhem, que inspiram, que respiram junto com quem vive ali. Por isso, meu trabalho tem como base a arquitetura sustentável, a biofilia e a biomimética — formas de olhar para a natureza como mestre e referência, buscando soluções que respeitam o ambiente e promovem qualidade de vida.</p>
+
+<p>Me identifico muito com o estilo brasileiro contemporâneo, que valoriza a luz, a ventilação, os materiais naturais e a relação com o entorno. Acredito numa arquitetura que respeita o clima, o tempo e o jeito de viver de cada pessoa.</p>
+
+<p>Tenho um carinho especial por projetos de recuperação de espaços. Acho bonito dar uma nova chance ao que já existe, ressignificar, transformar. É uma forma de honrar o passado e, ao mesmo tempo, abrir caminho para algo novo.</p>
+
+<p>No fim, meu foco é sempre o mesmo: criar ambientes que emocionam, acolhem e fazem sentido. Porque arquitetura, pra mim, é isso — é desenhar bem-estar.</p>
+                    <a href="#contact" class="btn btn-outline">Entre em contato</a>
+                </div>
+                <div class="about__image">
+                    <img src="img/fabio.PNG" alt="Escritório de arquitetura" class="about__img">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Portfolio Section -->
+    <section class="section" id="portfolio">
+        <div class="container">
+            <div class="portfolio__header">
+                <h2 class="section__title">Portfólio</h2>
+                <p>Conheça alguns dos nossos principais projetos arquitetônicos, cada um com sua própria narrativa e propósito.</p>
+                <div class="portfolio__filters">
+                    <button class="portfolio__filter active" data-filter="all">Todos</button>
+                    <button class="portfolio__filter" data-filter="residencial">Residencial</button>
+                    <button class="portfolio__filter" data-filter="comercial">Comercial</button>
+                    <button class="portfolio__filter" data-filter="interiores">Interiores</button>
+                </div>
+            </div>
+            <div class="portfolio__grid">
+                <!-- Projeto 1 - Mundo Verde -->
+                <div class="portfolio__item" data-category="comercial" onclick="openPortfolioModal('modal-mundo-verde')">
+                    <img src="img/projeto 1/capa.jpg" alt="Colégio Mundo Verde" class="portfolio__img" loading="lazy">
+                    <div class="portfolio__overlay">
+                        <h3 class="portfolio__title">Colégio Mundo Verde</h3>
+                        <p class="portfolio__category">Comercial</p>
+                    </div>
+                </div>
+                
+                <!-- Projeto 2 - Clínica Sensorial -->
+                <div class="portfolio__item" data-category="comercial" onclick="openPortfolioModal('modal-clinica-sensorial')">
+                    <img src="img/projeto 2/0_1 - Foto.jpg" alt="Clínica Sensorial" class="portfolio__img" loading="lazy">
+                    <div class="portfolio__overlay">
+                        <h3 class="portfolio__title">Clínica Sensorial</h3>
+                        <p class="portfolio__category">Comercial</p>
+                    </div>
+                </div>
+                
+                <!-- Projeto 3 - Motel Casino -->
+                <div class="portfolio__item" data-category="comercial" onclick="openPortfolioModal('modal-motel-casino')">
+                    <img src="img/projeto 3/WhatsApp Image 2023-10-30 at 05.25.22.jpeg" alt="Motel Casino" class="portfolio__img" loading="lazy">
+                    <div class="portfolio__overlay">
+                        <h3 class="portfolio__title">Motel Casino</h3>
+                        <p class="portfolio__category">Comercial</p>
+                    </div>
+                </div>
+                
+                <!-- Projeto 4 - Casa JF -->
+                <div class="portfolio__item" data-category="residencial" onclick="openPortfolioModal('modal-casa-jf')">
+                    <img src="img/projeto 4/FACHADA 02 DIA (1).png" alt="Casa JF" class="portfolio__img" loading="lazy">
+                    <div class="portfolio__overlay">
+                        <h3 class="portfolio__title">Casa JF</h3>
+                        <p class="portfolio__category">Residencial</p>
+                    </div>
+                </div>
+                
+                <!-- Projeto 5 - Salão Villa Olímpia -->
+                <div class="portfolio__item" data-category="interiores" onclick="openPortfolioModal('modal-salao-villa')">
+                    <img src="img/projeto 5/Cena 01 - FINAL.jpg" alt="Salão Villa Olímpia" class="portfolio__img" loading="lazy">
+                    <div class="portfolio__overlay">
+                        <h3 class="portfolio__title">Salão Villa Olímpia</h3>
+                        <p class="portfolio__category">Interiores</p>
+                    </div>
+                </div>
+                
+                <!-- Projeto 6 - BIM PARA ARQUITETOS -->
+                <div class="portfolio__item" data-category="residencial" onclick="openPortfolioModal('modal-bim-arquitetos')">
+                    <img src="img/projeto 6/Render Diurno - Cor.png" alt="BIM para Arquitetos" class="portfolio__img" loading="lazy">
+                    <div class="portfolio__overlay">
+                        <h3 class="portfolio__title">BIM para Arquitetos</h3>
+                        <p class="portfolio__category">Residencial</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- MODAIS DO PORTFÓLIO -->
+    
+    <!-- Modal Mundo Verde -->
+    <div id="modal-mundo-verde" class="portfolio-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Colégio Mundo Verde</h3>
+                <button class="modal-close" onclick="closePortfolioModal('modal-mundo-verde')">&times;</button>
+            </div>
+            
+            <img src="img/projeto 1/capa.jpg" alt="Colégio Mundo Verde" class="modal-main-image active">
+            
+            <div class="modal-gallery">
+                <img src="img/projeto 1/capa.jpg" alt="Colégio Mundo Verde - Foto 1" onclick="changeMainImage(this, 'modal-mundo-verde')">
+                <!-- Adicione mais imagens conforme necessário -->
+            </div>
+            
+            <div class="modal-description">
+                <p><strong>Categoria:</strong> Comercial</p>
+                <p><strong>Localização:</strong> [Localização]</p>
+                <p><strong>Ano:</strong> [Ano]</p>
+                <p><strong>Descrição:</strong> Projeto arquitetônico para o Colégio Mundo Verde, com espaços educacionais modernos e funcionais.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Clínica Sensorial -->
+    <div id="modal-clinica-sensorial" class="portfolio-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Clínica Sensorial</h3>
+                <button class="modal-close" onclick="closePortfolioModal('modal-clinica-sensorial')">&times;</button>
+            </div>
+            
+            <img src="img/projeto 2/0_1 - Foto.jpg" alt="Clínica Sensorial" class="modal-main-image active">
+            
+            <div class="modal-gallery">
+                <img src="img/projeto 2/0_1 - Foto.jpg" alt="Clínica Sensorial - Foto 1" onclick="changeMainImage(this, 'modal-clinica-sensorial')">
+                <img src="img/projeto 2/0_2 - Foto.jpg" alt="Clínica Sensorial - Foto 2" onclick="changeMainImage(this, 'modal-clinica-sensorial')">
+                <img src="img/projeto 2/0_11 - Foto.jpg" alt="Clínica Sensorial - Foto 3" onclick="changeMainImage(this, 'modal-clinica-sensorial')">
+                <img src="img/projeto 2/0_5 - Foto.jpg" alt="Clínica Sensorial - Foto 4" onclick="changeMainImage(this, 'modal-clinica-sensorial')">
+            </div>
+            
+            <div class="modal-description">
+                <p><strong>Categoria:</strong> Comercial</p>
+                <p><strong>Localização:</strong> [Localização]</p>
+                <p><strong>Ano:</strong> [Ano]</p>
+                <p><strong>Descrição:</strong> Projeto de arquitetura para clínica especializada em terapias sensoriais, com espaços acolhedores e funcionais.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Motel Casino -->
+    <div id="modal-motel-casino" class="portfolio-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Motel Casino</h3>
+                <button class="modal-close" onclick="closePortfolioModal('modal-motel-casino')">&times;</button>
+            </div>
+            
+            <img src="img/projeto 3/WhatsApp Image 2023-10-30 at 05.25.22.jpeg" alt="Motel Casino" class="modal-main-image active">
+            
+            <div class="modal-gallery">
+                <img src="img/projeto 3/WhatsApp Image 2023-10-30 at 05.25.22.jpeg" alt="Motel Casino - Foto 1" onclick="changeMainImage(this, 'modal-motel-casino')">
+                <img src="img/projeto 3/WhatsApp Image 2023-10-30 at 05.25.23.jpeg" alt="Motel Casino - Foto 2" onclick="changeMainImage(this, 'modal-motel-casino')">
+            </div>
+            
+            <div class="modal-description">
+                <p><strong>Categoria:</strong> Comercial</p>
+                <p><strong>Localização:</strong> [Localização]</p>
+                <p><strong>Ano:</strong> [Ano]</p>
+                <p><strong>Descrição:</strong> Projeto arquitetônico para motel com conceito moderno e sofisticado.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Casa JF -->
+    <div id="modal-casa-jf" class="portfolio-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Casa JF</h3>
+                <button class="modal-close" onclick="closePortfolioModal('modal-casa-jf')">&times;</button>
+            </div>
+            
+            <img src="img/projeto 4/FACHADA 02 DIA (1).png" alt="Casa JF" class="modal-main-image active">
+            
+            <div class="modal-gallery">
+                <img src="img/projeto 4/FACHADA 01.png" alt="Casa JF - Foto 1" onclick="changeMainImage(this, 'modal-casa-jf')">
+                <img src="img/projeto 4/FACHADA 02 DIA (1).png" alt="Casa JF - Foto 2" onclick="changeMainImage(this, 'modal-casa-jf')">
+                <img src="img/projeto 4/FACHADA 02 NOITE.png" alt="Casa JF - Foto 3" onclick="changeMainImage(this, 'modal-casa-jf')">
+            </div>
+            
+            <div class="modal-description">
+                <p><strong>Categoria:</strong> Residencial</p>
+                <p><strong>Localização:</strong> [Localização]</p>
+                <p><strong>Ano:</strong> [Ano]</p>
+                <p><strong>Descrição:</strong> Residência contemporânea com integração entre espaços internos e externos.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Salão Villa Olímpia -->
+    <div id="modal-salao-villa" class="portfolio-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Salão Villa Olímpia</h3>
+                <button class="modal-close" onclick="closePortfolioModal('modal-salao-villa')">&times;</button>
+            </div>
+            
+            <img src="img/projeto 5/Cena 01 - FINAL.jpg" alt="Salão Villa Olímpia" class="modal-main-image active">
+            
+            <div class="modal-gallery">
+                <img src="img/projeto 5/Cena 01 - FINAL.jpg" alt="Salão Villa Olímpia - Foto 1" onclick="changeMainImage(this, 'modal-salao-villa')">
+                <img src="img/projeto 5/Cena 02 - FINAL.jpg" alt="Salão Villa Olímpia - Foto 2" onclick="changeMainImage(this, 'modal-salao-villa')">
+                <img src="img/projeto 5/Cena 03.jpg" alt="Salão Villa Olímpia - Foto 3" onclick="changeMainImage(this, 'modal-salao-villa')">
+            </div>
+            
+            <div class="modal-description">
+                <p><strong>Categoria:</strong> Interiores</p>
+                <p><strong>Localização:</strong> [Localização]</p>
+                <p><strong>Ano:</strong> [Ano]</p>
+                <p><strong>Descrição:</strong> Projeto de interiores para salão no bairro Villa Olímpia.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal BIM para Arquitetos -->
+    <div id="modal-bim-arquitetos" class="portfolio-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">BIM para Arquitetos</h3>
+                <button class="modal-close" onclick="closePortfolioModal('modal-bim-arquitetos')">&times;</button>
+            </div>
+            
+            <img src="img/projeto 6/Render Diurno - Cor.png" alt="BIM para Arquitetos" class="modal-main-image active">
+            
+            <div class="modal-gallery">
+                <img src="img/projeto 6/Render Diurno - Cor.png" alt="BIM para Arquitetos - Foto 1" onclick="changeMainImage(this, 'modal-bim-arquitetos')">
+                <img src="img/projeto 6/Render Diurno 2  - Cor.png" alt="BIM para Arquitetos - Foto 2" onclick="changeMainImage(this, 'modal-bim-arquitetos')">
+                <img src="img/projeto 6/Render Diurno 3  - Cor.png" alt="BIM para Arquitetos - Foto 3" onclick="changeMainImage(this, 'modal-bim-arquitetos')">
+            </div>
+            
+            <div class="modal-description">
+                <p><strong>Categoria:</strong> Residencial</p>
+                <p><strong>Localização:</strong> [Localização]</p>
+                <p><strong>Ano:</strong> [Ano]</p>
+                <p><strong>Descrição:</strong> Projeto residencial desenvolvido com metodologia BIM.</p>
+            </div>
+        </div>
+    </div>
+    
+   <!-- Caderno Técnico Section -->
+<section class="section" id="caderno-tecnico">
+    <div class="container">
+        <div class="caderno-tecnico" style="background-color: #e8e8e8; border: 1px solid var(--color-accent);">
+            <h2 class="section__title" style="color: #393f50;">Caderno Técnico</h2>
+            <p class="section__subtitle" style="color: #555; margin-bottom: var(--spacing-lg);">Acesso restrito a usuários autorizados</p>
+            
+            <!-- Formulário de Login -->
+            <div class="login-form" id="login-form">
+                <div class="form__group">
+                    <input type="password" id="password" class="form__input" placeholder="Digite a senha" style="background-color: #f8f8f8; color: #333; border: 1px solid #ccc;">
+                    <p class="form__hint" style="color: #777; margin-top: var(--spacing-xs);">Entre em contato conosco para obter acesso</p>
+                </div>
+                <button id="login-btn" class="btn" style="background-color: var(--color-accent); color: #393f50; margin-top: var(--spacing-md);">
+                    Acessar <span class="arrow">→</span>
+                </button>
+                <p id="login-error" class="form__error" style="color: var(--color-accent); margin-top: var(--spacing-sm);"></p>
+            </div>
+            
+            <!-- Conteúdo Protegido -->
+            <div class="protected-content" id="protected-content" style="display: none;">
+                <div class="content-grid" style="margin-bottom: var(--spacing-lg);">
+                    <!-- Item único centralizado -->
+                    <div class="content-item" style="background-color: #f0f0f0; border: 1px solid #ddd; max-width: 600px; margin: 0 auto;">
+                        <h3 style="color: #393f50; text-align: center;">Detalhes Construtivos</h3>
+                        <div class="content-downloads" style="margin-top: var(--spacing-md);">
+                            <a href="pdf/Porjeto Clinica Sensorial.pdf" class="download-link" style="color: #444; border-color: #ccc; justify-content: center;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                PDF - Detalhes Técnicos (2.4MB)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: var(--spacing-lg);">
+                    <button id="logout-btn" class="btn btn-outline" style="border-color: var(--color-accent); color: var(--color-accent); margin: 0 auto;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" style="margin-right: 8px;">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Contact Section -->
+    <section class="section" id="contact">
+        <div class="container">
+            <div class="contact">
+                <div class="contact__content">
+                    <h2 class="section__title">Entre em Contato</h2>
+                    <p>Estamos prontos para transformar suas ideias em realidade. Entre em contato para agendar uma consulta e discutir seu próximo projeto.</p>
+                   
+                    <p>
+                        <strong>Contato:</strong><br>
+                        arq.urbfabio@hotmail.com<br>
+                        +55 (75) 9 8235-0660
+                    </p>
+                   
+                </div>
+                <form class="contact__form">
+                    <div class="form__group">
+                        <label for="name" class="form__label">Nome</label>
+                        <input type="text" id="name" class="form__input" placeholder="Seu nome completo">
+                    </div>
+                    <div class="form__group">
+                        <label for="email" class="form__label">E-mail</label>
+                        <input type="email" id="email" class="form__input" placeholder="Seu e-mail">
+                    </div>
+                    <div class="form__group">
+                        <label for="phone" class="form__label">Telefone</label>
+                        <input type="tel" id="phone" class="form__input" placeholder="Seu telefone">
+                    </div>
+                    <div class="form__group">
+                        <label for="message" class="form__label">Mensagem</label>
+                        <textarea id="message" class="form__textarea" placeholder="Conte-nos sobre seu projeto"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-arrow">
+                        Enviar Mensagem <span class="arrow">→</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grid">
+                <div>
+                    <div class="footer__logo">Fabio Rebouças</div>
+                    <p class="footer__text">Criando espaços que inspiram, transformam e perduram. Arquitetura de qualidade com foco em estética, funcionalidade e sustentabilidade.</p>
+                </div>
+                <div>
+                    <h3 class="footer__title">Navegação</h3>
+                    <ul class="footer__list">
+                        <li class="footer__item"><a href="#home" class="footer__link">Início</a></li>
+                        <li class="footer__item"><a href="#about" class="footer__link">Sobre</a></li>
+                        <li class="footer__item"><a href="#portfolio" class="footer__link">Portfólio</a></li>
+                        <li class="footer__item"><a href="#contact" class="footer__link">Contato</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="footer__title">Serviços</h3>
+                    <ul class="footer__list">
+                        <li class="footer__item"><a href="#" class="footer__link">Projetos Residenciais</a></li>
+                        <li class="footer__item"><a href="#" class="footer__link">Projetos Comerciais</a></li>
+                        <li class="footer__item"><a href="#" class="footer__link">Projetos de Interiores</a></li>
+                        <li class="footer__item"><a href="#" class="footer__link">Consultoria</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p class="footer__copyright">© 2025 Fabio Rebouças. Todos os direitos reservados.</p>
+                <div class="footer__social">
+                    <a href="https://www.linkedin.com/in/fabiobritoneuroarq/" class="footer__social-link" aria-label="LinkedIn" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-linkedin"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                    </a>
+                    <a href="mailto:arq.urbfabio@hotmail.com" class="footer__social-link" aria-label="E-mail">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </a>
+                    <a href="https://wa.me/5575982350660" class="footer__social-link" aria-label="WhatsApp" target="_blank">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // DOM Elements
+        const header = document.querySelector('.header');
+        const mobileToggle = document.querySelector('.mobile-toggle');
+        const nav = document.querySelector('.nav');
+        const navLinks = document.querySelectorAll('.nav__link');
+        const themeToggle = document.querySelector('.theme-toggle');
+        const sections = document.querySelectorAll('.section');
+        const heroImg = document.querySelector('.hero__img');
+        const heroContent = document.querySelector('.hero__content');
+        const portfolioFilters = document.querySelectorAll('.portfolio__filter');
+        const portfolioItems = document.querySelectorAll('.portfolio__item');
+        const fadeElements = document.querySelectorAll('.about__content, .about__image, .portfolio__header, .contact__content, .contact__form');
+
+        // Load hero image and content
+        window.addEventListener('load', () => {
+            heroImg.classList.add('loaded');
+            setTimeout(() => {
+                heroContent.classList.add('loaded');
+            }, 500);
+        });
+
+        // Scroll event
+        window.addEventListener('scroll', () => {
+            // Header scroll class
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            // Reveal animations on scroll
+            fadeElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('loaded');
+                }
+            });
+
+            // Portfolio items reveal
+            portfolioItems.forEach((item, index) => {
+                const itemTop = item.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (itemTop < windowHeight - 50) {
+                    setTimeout(() => {
+                        item.classList.add('loaded');
+                    }, index * 100); // Staggered animation
+                }
+            });
+
+            // Active nav link on scroll
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Mobile menu toggle
+        mobileToggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                nav.classList.remove('active');
+            });
+        });
+
+        // Theme toggle
+        themeToggle.addEventListener('click', () => {
+            document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
+            
+            // Update theme toggle icon
+            if (document.body.dataset.theme === 'dark') {
+                themeToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sun"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+            } else {
+                themeToggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            }
+        });
+
+        // Portfolio filtering
+        portfolioFilters.forEach(filter => {
+            filter.addEventListener('click', () => {
+                // Set active filter
+                portfolioFilters.forEach(f => f.classList.remove('active'));
+                filter.classList.add('active');
+                
+                const filterValue = filter.getAttribute('data-filter');
+                
+                // Filter items
+                portfolioItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // FUNÇÕES PARA OS MODAIS DO PORTFÓLIO
+        function openPortfolioModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePortfolioModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function changeMainImage(imgElement, modalId) {
+            const modal = document.getElementById(modalId);
+            const mainImages = modal.querySelectorAll('.modal-main-image');
+            
+            // Esconde todas as imagens principais
+            mainImages.forEach(img => img.classList.remove('active'));
+            
+            // Cria uma nova imagem principal com o src da miniatura clicada
+            const newMainImage = document.createElement('img');
+            newMainImage.src = imgElement.src.replace("150x150", "800x600"); // Ajuste o tamanho conforme necessário
+            newMainImage.alt = imgElement.alt;
+            newMainImage.className = 'modal-main-image active';
+            
+            // Substitui a imagem principal
+            const mainImageContainer = modal.querySelector('.modal-content');
+            const oldMainImage = modal.querySelector('.modal-main-image.active');
+            if (oldMainImage) {
+                mainImageContainer.insertBefore(newMainImage, oldMainImage);
+                oldMainImage.remove();
+            } else {
+                const gallery = modal.querySelector('.modal-gallery');
+                mainImageContainer.insertBefore(newMainImage, gallery);
+            }
+        }
+
+        // Fechar modal ao clicar fora do conteúdo
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('portfolio-modal')) {
+                e.target.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Fechar modal com tecla ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modals = document.querySelectorAll('.portfolio-modal');
+                modals.forEach(modal => {
+                    if (modal.style.display === 'block') {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        });
+
+        // Caderno Técnico - Login
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementos do Caderno Técnico
+            const loginForm = document.getElementById('login-form');
+            const protectedContent = document.getElementById('protected-content');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const loginError = document.getElementById('login-error');
+            
+            // Senha válida (em produção, substitua por autenticação segura no servidor)
+            const VALID_PASSWORD = "fabioarq"; // Troque esta senha
+            
+            // Verificar se já está logado
+            if(localStorage.getItem('cadernoAcesso') === 'true') {
+                showProtectedContent();
+            }
+            
+            // Evento de Login
+            loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                if(passwordInput.value === VALID_PASSWORD) {
+                    // Login bem-sucedido
+                    localStorage.setItem('cadernoAcesso', 'true');
+                    showProtectedContent();
+                } else {
+                    // Senha incorreta
+                    loginError.textContent = "Senha incorreta. Tente novamente.";
+                    loginError.style.display = 'block';
+                    passwordInput.focus();
+                }
+            });
+            
+            // Evento de Logout
+            logoutBtn.addEventListener('click', function() {
+                localStorage.removeItem('cadernoAcesso');
+                hideProtectedContent();
+                passwordInput.value = '';
+            });
+            
+            // Funções auxiliares
+            function showProtectedContent() {
+                loginForm.style.display = 'none';
+                protectedContent.style.display = 'block';
+                loginError.style.display = 'none';
+            }
+            
+            function hideProtectedContent() {
+                loginForm.style.display = 'block';
+                protectedContent.style.display = 'none';
+            }
+            
+            // Permitir login com Enter
+            passwordInput.addEventListener('keypress', function(e) {
+                if(e.key === 'Enter') {
+                    loginBtn.click();
+                }
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const headerHeight = header.offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        const contactForm = document.querySelector('.contact__form');
+        
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.querySelector('#name').value;
+            const email = document.querySelector('#email').value;
+            const phone = document.querySelector('#phone').value;
+            const message = document.querySelector('#message').value;
+            
+            // Form validation (basic example)
+            if (!name || !email || !message) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+            
+            // Here you would typically send the form data to a server
+            // For demo purposes, just show an alert
+            alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+            
+            // Reset form
+            contactForm.reset();
+        });
+
+        // Trigger initial scroll event to set correct active states
+        window.dispatchEvent(new Event('scroll'));
+    </script>
+</body>
+</html>
