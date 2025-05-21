@@ -953,7 +953,7 @@
     <!-- Header -->
     <header class="header">
         <div class="container header__container">
-            <a href="#" class="header__logo">Fabio Rebouças</a>
+            <a href="index.html" class="header__logo">Fabio Rebouças</a>
             <button class="mobile-toggle" aria-label="Toggle menu">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
@@ -1530,44 +1530,52 @@
     }
 </style>
     <!-- Contact Section -->
-    <section class="section" id="contact">
-        <div class="container">
-            <div class="contact">
-                <div class="contact__content">
-                    <h2 class="section__title">Entre em Contato</h2>
-                    <p>Estamos prontos para transformar suas ideias em realidade. Entre em contato para agendar uma consulta e discutir seu próximo projeto.</p>
-                   
-                    <p>
-                        <strong>Contato:</strong><br>
-                        arq.urbfabio@hotmail.com<br>
-                        +55 (75) 9 8235-0660
-                    </p>
-                   
-                </div>
-                <form class="contact__form">
-                    <div class="form__group">
-                        <label for="name" class="form__label">Nome</label>
-                        <input type="text" id="name" class="form__input" placeholder="Seu nome completo">
-                    </div>
-                    <div class="form__group">
-                        <label for="email" class="form__label">E-mail</label>
-                        <input type="email" id="email" class="form__input" placeholder="Seu e-mail">
-                    </div>
-                    <div class="form__group">
-                        <label for="phone" class="form__label">Telefone</label>
-                        <input type="tel" id="phone" class="form__input" placeholder="Seu telefone">
-                    </div>
-                    <div class="form__group">
-                        <label for="message" class="form__label">Mensagem</label>
-                        <textarea id="message" class="form__textarea" placeholder="Conte-nos sobre seu projeto"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-arrow">
-                        Enviar Mensagem <span class="arrow">→</span>
-                    </button>
-                </form>
+<section class="section" id="contact">
+    <div class="container">
+        <div class="contact">
+            <div class="contact__content">
+                <h2 class="section__title">Entre em Contato</h2>
+                <p>Estamos prontos para transformar suas ideias em realidade. Entre em contato para agendar uma consulta e discutir seu próximo projeto.</p>
+               
+                <p>
+                    <strong>Contato:</strong><br>
+                    arq.urbfabio@hotmail.com<br>
+                    +55 (75) 9 8235-0660
+                </p>
             </div>
+            
+            <!-- Formulário atualizado com FormSubmit -->
+            <form class="contact__form" action="https://formsubmit.co/arq.urbfabio@hotmail.com" method="POST">
+                <!-- Configurações do FormSubmit -->
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="https://fabior-arq.github.io/portfolio-fabio-reboucas/obrigado.html"> <!-- Substitua pelo seu URL -->
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_subject" value="Novo contato do site!">
+                
+                <!-- Campos do formulário -->
+                <div class="form__group">
+                    <label for="name" class="form__label">Nome</label>
+                    <input type="text" id="name" name="name" class="form__input" placeholder="Seu nome completo" required>
+                </div>
+                <div class="form__group">
+                    <label for="email" class="form__label">E-mail</label>
+                    <input type="email" id="email" name="email" class="form__input" placeholder="Seu e-mail" required>
+                </div>
+                <div class="form__group">
+                    <label for="phone" class="form__label">Telefone</label>
+                    <input type="tel" id="phone" name="phone" class="form__input" placeholder="Seu telefone">
+                </div>
+                <div class="form__group">
+                    <label for="message" class="form__label">Mensagem</label>
+                    <textarea id="message" name="message" class="form__textarea" placeholder="Conte-nos sobre seu projeto" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-arrow">
+                    Enviar Mensagem <span class="arrow">→</span>
+                </button>
+            </form>
         </div>
-    </section>
+    </div>
+</section>
 
    <!-- Footer Section -->
 <footer class="footer">
@@ -1868,31 +1876,24 @@
             });
         });
 
-        // Form submission
-        const contactForm = document.querySelector('.contact__form');
-        
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Get form values
-            const name = document.querySelector('#name').value;
-            const email = document.querySelector('#email').value;
-            const phone = document.querySelector('#phone').value;
-            const message = document.querySelector('#message').value;
-            
-            // Form validation (basic example)
-            if (!name || !email || !message) {
-                alert('Por favor, preencha todos os campos obrigatórios.');
-                return;
-            }
-            
-            // Here you would typically send the form data to a server
-            // For demo purposes, just show an alert
-            alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
-            
-            // Reset form
-            contactForm.reset();
-        });
+        // Validação do formulário antes do envio (opcional)
+const contactForm = document.querySelector('.contact__form');
+
+contactForm.addEventListener('submit', function(e) {
+    // Validação básica do lado do cliente
+    const name = document.querySelector('#name').value;
+    const email = document.querySelector('#email').value;
+    const message = document.querySelector('#message').value;
+    
+    if (!name || !email || !message) {
+        e.preventDefault(); // Impede o envio se campos obrigatórios estiverem vazios
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        return;
+    }
+    
+    // Você pode adicionar aqui uma animação de carregamento se quiser
+    // document.getElementById('loading').style.display = 'block';
+});
 
         // Trigger initial scroll event to set correct active states
         window.dispatchEvent(new Event('scroll'));
